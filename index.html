@@ -134,7 +134,7 @@
   <nav class="site-state">
       <div class="site-state-item site-state-posts">
         <a href="/archives/">
-          <span class="site-state-item-count">3</span>
+          <span class="site-state-item-count">4</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
@@ -152,6 +152,131 @@
     </div>
 
     <div class="main-inner index posts-expand">
+
+    
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2026/10/18/%E5%BF%AB%E6%8D%B7%E9%94%AE%E7%AE%A1%E7%90%86%E5%B7%A5%E5%85%B7-%E5%8D%9A%E5%AE%A2/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.png">
+      <meta itemprop="name" content="阳晔">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="阳晔的临时简易博客">
+      <meta itemprop="description" content="记录学习历程">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content=" | 阳晔的临时简易博客">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          <a href="/2026/10/18/%E5%BF%AB%E6%8D%B7%E9%94%AE%E7%AE%A1%E7%90%86%E5%B7%A5%E5%85%B7-%E5%8D%9A%E5%AE%A2/" class="post-title-link" itemprop="url">快捷键管理工具</a>
+        </h2>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+      
+
+      <time title="创建时间：2026-10-18 21:49:08 / 修改时间：21:49:36" itemprop="dateCreated datePublished" datetime="2026-10-18T21:49:08+08:00">2026-10-18</time>
+    </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+          <h1 id="按一个键，代替一串组合键：我写了个-Windows-快捷键替代工具"><a href="#按一个键，代替一串组合键：我写了个-Windows-快捷键替代工具" class="headerlink" title="按一个键，代替一串组合键：我写了个 Windows 快捷键替代工具"></a>按一个键，代替一串组合键：我写了个 Windows 快捷键替代工具</h1><p>用键盘久了，总会遇到这种别扭事：某个操作藏在三层快捷键后面，或者一个常用功能压根没有顺手的键位。</p>
+<p>比如我想给正在播放的歌点个「喜欢」，网易云给的是 <code>Ctrl+Alt+L</code>；想在某些软件里按 <code>Alt+Ctrl+小键盘0</code>，得三根手指一起上。手指在键盘上找组合键的时间，足够打断一次专注。</p>
+<p>于是我写了个小工具：<strong>自定义「触发键 → 输出组合键」的规则，按一个键就代替一串组合键。</strong></p>
+<p><img src="/../images/pic.png" alt="工具界面"></p>
+<h2 id="它做什么"><a href="#它做什么" class="headerlink" title="它做什么"></a>它做什么</h2><p>两个我自己天天用的场景：</p>
+<table>
+<thead>
+<tr>
+<th>按一下</th>
+<th>实际发出</th>
+<th>效果</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>小键盘 .</code></td>
+<td><code>Alt+Ctrl+小键盘0</code></td>
+<td>在特定软件里触发组合键</td>
+</tr>
+<tr>
+<td><code>F8</code></td>
+<td><code>Ctrl+Alt+L</code></td>
+<td>给网易云当前歌曲点「喜欢」</td>
+</tr>
+</tbody></table>
+<p>规则可以<strong>限定生效范围</strong>：只在白名单里的程序生效（比如只有网易云里 <code>F8</code> 才是点喜欢，别的程序里 <code>F8</code> 该干嘛干嘛），也可以设成全局。</p>
+<p>替代模式由一个<strong>开关热键</strong>控制（默认 <code>F12</code>）：按一下进入替代模式，再按一下回到正常输入——这样你的键位不会一直被改掉。</p>
+<h2 id="几个真正难缠的问题"><a href="#几个真正难缠的问题" class="headerlink" title="几个真正难缠的问题"></a>几个真正难缠的问题</h2><p>功能本身不复杂：装一个底层键盘钩子（<code>WH_KEYBOARD_LL</code>），命中规则就吞掉按键，再用 <code>SendInput</code> 把组合键注入回去。难的是那些「看起来能用、过一会儿就失效」的坑。</p>
+<p><strong>1. 钩子会被系统静默摘掉</strong></p>
+<p>Windows 对低层钩子回调有时限（约 300ms）。一旦超时，系统会把钩子从链上移除——<strong>不报错、不通知，句柄也不会变成 NULL</strong>。于是程序看着一切正常，实际一个键都收不到。</p>
+<p>我最初在回调里同步写日志文件，就踩了这个坑。后来把日志改成后台线程异步写，并加了一个「看门狗」：如果已经收到过按键、但计数 25 秒不再增长，就判定钩子被摘，自动重装。</p>
+<p><strong>2. 低层钩子看不到管理员程序的按键</strong></p>
+<p>这是 UIPI（用户界面特权隔离）：普通权限的钩子收不到更高完整性级别程序的输入。表现就是「工具自己窗口里按键正常，切到别的程序全废」。</p>
+<p>这不是 bug，是 Windows 的安全设计——否则任何普通程序都能窃听管理员窗口里的密码。解法只有一个：<strong>以管理员身份运行</strong>（工具现在会自动请求提权，另附一个不提权的启动脚本给介意 UAC 的人）。</p>
+<p><strong>3. 长按会反复触发</strong></p>
+<p>系统的长按会持续发「自动重复」的 KEYDOWN。如果按下即触发，按住一秒就能把组合键注入十几次。</p>
+<p>最后我把开关热键和触发键都改成 <strong>「按下武装、松开才动作」</strong>：按下只记录，松开才真正执行。这样无论按多久、系统补发多少个事件，一次物理按压都只算一次。</p>
+<p><strong>4. 状态被自己覆盖</strong></p>
+<p>曾经出现过「按了 <code>F12</code> 却没切换模式」：模式存在引擎的独立属性里，而配置文件另存一份；界面只要保存一次配置，就用文件里的旧值把运行状态覆盖回去了。改成配置单一数据源后解决。</p>
+<h2 id="技术上是什么"><a href="#技术上是什么" class="headerlink" title="技术上是什么"></a>技术上是什么</h2><ul>
+<li><strong>Python + tkinter</strong>，<strong>纯标准库，零第三方依赖</strong>；</li>
+<li>单文件约 3400 行，包含配置、键名表、钩子、注入、规则引擎和界面；</li>
+<li>73 项单元测试，GitHub Actions 在 Windows 上跑 Python 3.9 &#x2F; 3.11 &#x2F; 3.13；</li>
+<li>内置诊断：<code>--diag</code>（15 秒实机诊断）、<code>--watch</code>（持续监听）、<code>--keys</code>（显示真实键码），外加一份记录钩子状态的心跳日志；</li>
+<li>可以打包成带 Python 的便携版，拷到别的电脑双击就能用。</li>
+</ul>
+<h2 id="怎么用"><a href="#怎么用" class="headerlink" title="怎么用"></a>怎么用</h2><figure class="highlight bat"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">git clone https://github.com/Yangye0321/kuaijiejian.git</span><br><span class="line"><span class="built_in">cd</span> kuaijiejian</span><br><span class="line"><span class="built_in">start</span>-kuaijiejian.bat</span><br></pre></td></tr></table></figure>
+
+<p>第一次启动会生成配置文件，带两条默认关闭的示例规则。在界面里点「录制」，按下你的触发键和输出组合，就能用了。</p>
+<h2 id="限制"><a href="#限制" class="headerlink" title="限制"></a>限制</h2><ul>
+<li>只支持 Windows 10&#x2F;11；低层钩子意味着某些用 RawInput 或反作弊驱动的游戏可能绕过它；</li>
+<li>触发键只能是单个按键，输出组合最多 4 个键；</li>
+<li>它会申请管理员权限，并且未签名——所以启动时的 UAC 提示是预期行为，不是病毒；</li>
+<li>工具本身不联网、不上传任何数据，按键日志只写在本地。</li>
+</ul>
+<h2 id="最后"><a href="#最后" class="headerlink" title="最后"></a>最后</h2><p>这类小工具的价值不在技术复杂度，而在「每天少按几次组合键」。真正花时间的也不是写功能，而是把那些<strong>只在特定条件下才暴露的竞态和系统限制</strong>一个个找出来。</p>
+<p>代码开源在 <a target="_blank" rel="noopener" href="https://github.com/Yangye0321/kuaijiejian">github.com&#x2F;Yangye0321&#x2F;kuaijiejian</a>，MIT 协议。如果你也有「这个功能为什么没有快捷键」的烦恼，欢迎试试，或者直接改一份自己用。</p>
+
+      
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+</div>
+
+
+
 
     
 
